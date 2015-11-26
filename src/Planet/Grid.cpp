@@ -9,12 +9,12 @@ namespace Planet
 	}
 
 	void Grid::draw() const {
-		glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	Grid::Grid(int divs) {
 		vertices.reserve((divs+1) * (divs+1));
-		indices.reserve((divs+1) * divs * 4);
+		indices.reserve(divs * divs * 6);
 
 		for (auto i=0; i <= divs; ++i) {
 			for (auto j=0; j <= divs; ++j) {
@@ -22,13 +22,13 @@ namespace Planet
 				vertex -= glm::vec3{1.0, 1.0, 0.0};
 				vertices.push_back(vertex);
 
-				if (i < divs) {
+				if (i < divs && j < divs) {
 					indices.push_back((i+0) + (j+0) * (divs+1));
 					indices.push_back((i+1) + (j+0) * (divs+1));
-				}
+					indices.push_back((i+0) + (j+1) * (divs+1));
 
-				if (j < divs) {
-					indices.push_back((i+0) + (j+0) * (divs+1));
+					indices.push_back((i+1) + (j+1) * (divs+1));
+					indices.push_back((i+1) + (j+0) * (divs+1));
 					indices.push_back((i+0) + (j+1) * (divs+1));
 				}
 			}

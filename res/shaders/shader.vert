@@ -7,7 +7,8 @@ uniform mat4 projection;
 uniform mat4 grid;
 uniform int deform;
 
-out vec3 normal;
+out vec3 vNormal;
+out float vHeight;
 
 void main() {
 	vec4 final_pos;
@@ -17,17 +18,20 @@ void main() {
 		float phi   = atan(grid_pos.y, grid_pos.x+0.0001);
 
 		vec3 sphere_position;
-		float height = 1000.0 + 500.0 * sin(grid_pos.x*grid_pos.y*grid_pos.z);
+		
+		vHeight = sin(grid_pos.x*grid_pos.y*grid_pos.z * 100.0);
+
+		float height = 1000.0 + 50.0 * vHeight;
 		sphere_position.x = height * sin(theta) * cos(phi);
 		sphere_position.y = height * sin(theta) * sin(phi);
 		sphere_position.z = height * cos(theta);
 
-		normal = normalize(mat3(model) * sphere_position);
+		vNormal = normalize(mat3(model) * sphere_position);
 
 		final_pos = model * vec4(sphere_position, 1.0);
 	}
 	else {
-		normal = normalize(mat3(model) * vec3(grid * vec4(0.0, 0.0, 1.0, 1.0)));
+		vNormal = normalize(mat3(model) * vec3(grid * vec4(0.0, 0.0, 1.0, 1.0)));
 
 		final_pos = model * grid * vec4(position, 1.0);
 	}
