@@ -39,15 +39,17 @@ namespace Planet
 		// Check whether the position is within half_size distance of the node's center or four corners
 		// This is much simpler to implement than real square-to-sphere collision testing
 		bool collision = false;
-		if (glm::length2(position - origin) < glm::length2(half_size)) {
+		const auto length = glm::length2(4.f*half_size);
+		const auto offset = position - origin;
+		if (glm::length2(position - origin) < length) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec2{ 1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(offset + half_size*glm::vec2{ 1.f, 1.f}) < length) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec2{ 1.f,-1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(offset + half_size*glm::vec2{ 1.f,-1.f}) < length) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec2{-1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(offset + half_size*glm::vec2{-1.f, 1.f}) < length) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec2{-1.f,-1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(offset + half_size*glm::vec2{-1.f,-1.f}) < length) {
 			collision = true;
 		}
 
