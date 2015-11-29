@@ -1,25 +1,28 @@
 #version 330
 
-in vec3 vNormal;
-in float vHeight;
+in vec3 gNormal;
+in float gHeight;
+in vec3 gPosition;
 
 uniform mat4 view;
 
 out vec4 fColor;
 
 void main() {
-	float height = (vHeight + 1.0) / 2.0;
+	float height = (gHeight + 1.0) / 2.0;
 
 	vec4 color = vec4(
 		mod(height+0.3, 1.0),
 		mod(pow(height+0.3, 2), 1.0),
-		clamp(-vHeight, 0, 1),
+		clamp(-gHeight, 0, 1),
 		1.0
 	);
 
-	if (vHeight == -2.0) color = vec4(0.4, 0.4, 0.4, 1.0);
+	if (gHeight == -2.0) color = vec4(0.4, 0.4, 0.4, 1.0);
 
-	float light = 1.0;//dot(normalize(vNormal), normalize(vec3(0.0, 0.0, 8.0)));
+	vec3 light_pos = vec3(0.0, 10.0, -10.0);
+	vec3 to_surface = normalize(light_pos - gPosition);
+	float brightness = abs(dot(to_surface, normalize(gNormal)));
 
-	fColor = color * light;
+	fColor = vec4(color.rgb * brightness, 1.0);
 }

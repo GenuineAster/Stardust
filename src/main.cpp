@@ -50,6 +50,10 @@ int main() {
 	vertex.setSourceFromFile("res/shaders/shader.vert");
 	vertex.compile();
 
+	Graphics::OpenGL::Shader geometry(GL_GEOMETRY_SHADER);
+	geometry.setSourceFromFile("res/shaders/shader.geom");
+	geometry.compile();
+
 	Graphics::OpenGL::Shader fragment(GL_FRAGMENT_SHADER);
 	fragment.setSourceFromFile("res/shaders/shader.frag");
 	fragment.compile();
@@ -57,6 +61,7 @@ int main() {
 	Graphics::OpenGL::ShaderProgram shader;
 	shader.create();
 	shader.attach(vertex);
+	shader.attach(geometry);
 	shader.attach(fragment);
 	shader.link();
 	shader.bindFragDataLocation("fColor", 0);
