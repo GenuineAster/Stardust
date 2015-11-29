@@ -5,6 +5,7 @@ layout(location=0) in vec3 position;
 uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 grid;
+uniform mat4 view;
 uniform int deform;
 
 out vec3 vNormal;
@@ -32,12 +33,12 @@ void main() {
 		vHeight = anoise(sphere_position*1.5);
 		float height = 1000.0 + 50.0 * vHeight;
 		sphere_position *= height;
-		final_pos = model * vec4(sphere_position, 1.0);
+		final_pos = view * model * vec4(sphere_position, 1.0);
 	}
 	else {
 		vNormal = normalize(mat3(model) * vec3(grid * vec4(0.0, 0.0, 1.0, 1.0)));
 		vHeight = -2.0;
-		final_pos = model * grid * vec4(position, 1.0);
+		final_pos = view * model * grid * vec4(position, 1.0);
 	}
 
 	gl_Position = projection * final_pos;

@@ -63,13 +63,22 @@ int main() {
 	shader.use();
 
 	// Uniform setup/defaults
-	glm::mat4 projection = glm::perspective(glm::radians(90.f), 640.f/480.f, 0.1f, 3000.f);
+	glm::mat4 projection = glm::perspective(glm::radians(90.f), 640.f/480.f, 0.1f, 10000.f);
 	auto projection_uniform = shader.getUniformLocation("projection");
 	shader.setUniformData(projection_uniform, projection);
 
-	glm::mat4 model = glm::translate(glm::mat4(1.f), {0.f, 0.f, -1500.f});
+	glm::mat4 model = glm::translate(glm::mat4(1.f), {0.f, 0.f, 0.f});
 	auto model_uniform = shader.getUniformLocation("model");
 	shader.setUniformData(model_uniform, model);
+
+
+	glm::vec3 eye {0.f, 2050.f, 0.f};
+	glm::vec3 center {0.0f, 0.0f, 0.0f};
+	glm::vec3 up {1.0, 0.f, 0.0};
+
+	glm::mat4 view = glm::lookAt(eye, center, up);
+	auto view_uniform = shader.getUniformLocation("view");
+	shader.setUniformData(view_uniform, view);
 
 	glm::mat4 grid_trans = glm::mat4(1.f);
 	auto grid_trans_uniform = shader.getUniformLocation("grid");
@@ -82,9 +91,6 @@ int main() {
 
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
-	cube.buildFromPoint({1000.f, 1000.f, 1000.f});
-	std::cout<<"Leaf count: "<<cube.countLeaves()<<std::endl;
-
 
 	Util::FrameTimer frame_timer;
 
@@ -96,9 +102,13 @@ int main() {
 			glfwPollEvents();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			view = glm::lookAt(eye, center, up);
+			shader.setUniformData(view_uniform, view);
+
 			model = glm::rotate(model, glm::two_pi<float>() / 2000.f, {0.1, 0.2, 0.3});
 			shader.setUniformData(model_uniform, model);
 			
+			cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
 			cube.draw([&](auto m){
 				shader.setUniformData(grid_trans_uniform, m);
 			});

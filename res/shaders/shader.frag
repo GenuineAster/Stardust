@@ -3,6 +3,8 @@
 in vec3 vNormal;
 in float vHeight;
 
+uniform mat4 view;
+
 out vec4 fColor;
 
 void main() {
@@ -17,7 +19,7 @@ void main() {
 
 	if (vHeight == -2.0) color = vec4(0.4, 0.4, 0.4, 1.0);
 
-	float light = dot(normalize(vNormal), normalize(vec3(0.0, 0.0, 8.0)));
+	float light = 1.0;//dot(normalize(vNormal), normalize(vec3(0.0, 0.0, 8.0)));
 
 	fColor = color * light;
 }
