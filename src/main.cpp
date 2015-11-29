@@ -77,9 +77,9 @@ int main() {
 	shader.setUniformData(model_uniform, model);
 
 
-	glm::vec3 eye {0.f, 2050.f, 0.f};
-	glm::vec3 center {0.0f, 0.0f, 0.0f};
-	glm::vec3 up {1.0, 0.f, 0.0};
+	glm::vec3 eye {0.f, 1020.f, 0.f};
+	glm::vec3 center {5.f, 1015.f, -5.f};
+	glm::vec3 up {0.f, 1.f, 0.f};
 
 	glm::mat4 view = glm::lookAt(eye, center, up);
 	auto view_uniform = shader.getUniformLocation("view");
@@ -100,10 +100,11 @@ int main() {
 			glfwPollEvents();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			eye.y *= 1.00009;
 			view = glm::lookAt(eye, center, up);
 			shader.setUniformData(view_uniform, view);
 
-			model = glm::rotate(model, glm::two_pi<float>() / 2000.f, {0.1, 0.2, 0.3});
+			model = glm::rotate(model, glm::two_pi<float>() / 20000.f, {0.1, 0.2, 0.3});
 			shader.setUniformData(model_uniform, model);
 			
 			cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
