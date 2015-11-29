@@ -34,8 +34,8 @@ namespace Planet
 	void SphereGrid::buildFromPoint(const glm::vec3 &camera_pos) {
 		const auto scaled = camera_pos / radius / 2.f;
 		for (auto i = 0u; i < tree.size(); ++i) {
-			glm::vec3 transformed_pos = glm::vec3(glm::inverse(getPositionTransforms()[i])*glm::vec4(scaled, 1.0));
-			tree[i] = std::make_unique<GridTree>(10, 0, transformed_pos, glm::vec3{0.0, 0.0, 0.0}, glm::vec3{0.5, 0.5, 0.0});
+			glm::vec2 transformed_pos = glm::vec2(glm::inverse(getPlaneTransforms()[i])*glm::vec4(scaled, 1.0));
+			tree[i] = std::make_unique<GridTree>(10, 0, transformed_pos, glm::vec2{0.0, 0.0}, glm::vec2{0.5, 0.5});
 		}
 	}
 

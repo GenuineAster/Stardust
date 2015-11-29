@@ -23,24 +23,15 @@ namespace Planet
 			}
 		} else {
 			// The grid has a size of [2, 2], so the scale can remain the half_size
-			glm::vec3 scale = half_size;
-
-			// Avoid scaling any component by zero
-			if (scale.x < 0.00001) {
-				scale.x = scale.y;
-			} else if (scale.y < 0.00001) {
-				scale.y = scale.z;
-			} else if (scale.z < 0.00001) {
-				scale.z = scale.x;
-			}
+			glm::vec3 scale = {half_size.x, half_size.y, half_size.y};
 
 			// Upload uniform and draw
-			set_model(glm::scale(glm::translate(glm::mat4(1.f), origin), scale));
+			set_model(glm::scale(glm::translate(glm::mat4(1.f), glm::vec3{origin, 0.0}), scale));
 			grid.draw();
 		}
 	}
 
-	GridTree::GridTree(int max_depth, int depth, glm::vec3 position, glm::vec3 origin, glm::vec3 half_size, GridTree *parent) :
+	GridTree::GridTree(int max_depth, int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent) :
 		origin(origin),
 		half_size(half_size),
 		parent(parent)
@@ -50,23 +41,23 @@ namespace Planet
 		bool collision = false;
 		if (glm::length2(position - origin) < glm::length2(half_size)) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec3{ 1.f, 1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(position - origin + half_size*glm::vec2{ 1.f, 1.f}) < glm::length2(half_size)) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec3{ 1.f,-1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(position - origin + half_size*glm::vec2{ 1.f,-1.f}) < glm::length2(half_size)) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec3{-1.f, 1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(position - origin + half_size*glm::vec2{-1.f, 1.f}) < glm::length2(half_size)) {
 			collision = true;
-		} else if(glm::length2(position - origin + half_size*glm::vec3{-1.f,-1.f, 1.f}) < glm::length2(half_size)) {
+		} else if(glm::length2(position - origin + half_size*glm::vec2{-1.f,-1.f}) < glm::length2(half_size)) {
 			collision = true;
 		}
 
 		// If there's a collision, subdivide the tree
 		if (depth < max_depth && collision) {
 			nodes = std::vector<GridTree>{
-				{max_depth, depth+1, position, origin + half_size*glm::vec3{ 0.5f, 0.5f, 0.f}, half_size*0.5f, this},
-				{max_depth, depth+1, position, origin + half_size*glm::vec3{ 0.5f,-0.5f, 0.f}, half_size*0.5f, this},
-				{max_depth, depth+1, position, origin + half_size*glm::vec3{-0.5f, 0.5f, 0.f}, half_size*0.5f, this},
-				{max_depth, depth+1, position, origin + half_size*glm::vec3{-0.5f,-0.5f, 0.f}, half_size*0.5f, this}
+				{max_depth, depth+1, position, origin + half_size*glm::vec2{ 0.5f, 0.5f}, half_size*0.5f, this},
+				{max_depth, depth+1, position, origin + half_size*glm::vec2{ 0.5f,-0.5f}, half_size*0.5f, this},
+				{max_depth, depth+1, position, origin + half_size*glm::vec2{-0.5f, 0.5f}, half_size*0.5f, this},
+				{max_depth, depth+1, position, origin + half_size*glm::vec2{-0.5f,-0.5f}, half_size*0.5f, this}
 			};
 		}
 	}

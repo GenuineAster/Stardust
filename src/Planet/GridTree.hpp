@@ -10,14 +10,14 @@ namespace Planet
 	class GridTree
 	{
 	private:
-		glm::vec3 origin;
-		glm::vec3 half_size;
-		GridTree *parent;
+		const glm::vec2 origin;
+		const glm::vec2 half_size;
+		const GridTree *parent;
 		std::vector<GridTree> nodes;
 
 	public:
 		std::size_t countLeaves() const;
 		void draw(const Grid &grid, const std::function<void(const glm::mat4&)> &set_model) const;
-		GridTree(int max_depth, int depth, glm::vec3 position, glm::vec3 origin, glm::vec3 half_size, GridTree *parent=nullptr);
+		GridTree(int max_depth, int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent=nullptr);
 	};
 }
