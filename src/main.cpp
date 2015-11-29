@@ -89,11 +89,6 @@ int main() {
 	auto grid_trans_uniform = shader.getUniformLocation("grid");
 	shader.setUniformData(grid_trans_uniform, grid_trans);
 
-	int deform = 1;
-	auto deform_uniform = shader.getUniformLocation("deform");
-	shader.setUniformData(deform_uniform, deform);
-
-
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
 
