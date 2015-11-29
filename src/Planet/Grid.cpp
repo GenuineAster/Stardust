@@ -12,6 +12,10 @@ namespace Planet
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 	}
 
+	void Grid::drawInstanced(const uint32_t instances) const {
+		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr, instances);
+	}
+
 	Grid::Grid(int divs) {
 		vertices.reserve((divs+1) * (divs+1));
 		indices.reserve(divs * divs * 6);

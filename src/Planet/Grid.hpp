@@ -16,6 +16,7 @@ namespace Planet
 	public:
 		void bind() const;
 		void draw() const;
+		void drawInstanced(const uint32_t instances) const;
 		Grid(int divs);
 		~Grid();
 	};

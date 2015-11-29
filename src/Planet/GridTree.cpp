@@ -16,17 +16,6 @@ namespace Planet
 		return accumulator;
 	}
 
-	void GridTree::draw(const Grid &grid, const std::function<void(const glm::mat4&)> &set_model) const {
-		if (!nodes.empty()) {
-			for (auto &node : nodes) {
-				node.draw(grid, set_model);
-			}
-		} else {
-			getAttribs(set_model);
-			grid.draw();
-		}
-	}
-
 	void GridTree::getAttribs(const std::function<void(const glm::mat4&)> &add_attribs) const {
 		if (!nodes.empty()) {
 			for (auto &node : nodes) {

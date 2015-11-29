@@ -17,12 +17,13 @@ namespace Planet
 
 		float radius;
 		Grid grid;
+		GLuint grid_instance_vbo;
 		std::array<std::unique_ptr<GridTree>, 6> tree;
 		std::array<Graphics::OpenGL::Texture, 6> textures;
 
 	public:
 		std::size_t countLeaves() const;
-		void draw(const std::function<void(const glm::mat4&)> &set_model) const;
+		void draw() const;
 		void buildFromPoint(const glm::vec3 &camera_pos);
 
 		SphereGrid(int divs, float radius);

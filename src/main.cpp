@@ -85,10 +85,6 @@ int main() {
 	auto view_uniform = shader.getUniformLocation("view");
 	shader.setUniformData(view_uniform, view);
 
-	glm::mat4 grid_trans = glm::mat4(1.f);
-	auto grid_trans_uniform = shader.getUniformLocation("grid");
-	shader.setUniformData(grid_trans_uniform, grid_trans);
-
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
 
@@ -109,9 +105,7 @@ int main() {
 			shader.setUniformData(model_uniform, model);
 			
 			cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
-			cube.draw([&](auto m){
-				shader.setUniformData(grid_trans_uniform, m);
-			});
+			cube.draw();
 
 			glfwSwapBuffers(window);
 		}

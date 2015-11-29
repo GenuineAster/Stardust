@@ -22,13 +22,21 @@ namespace Planet
 		return accumulator;
 	}
 
-	void SphereGrid::draw(const std::function<void(const glm::mat4&)> &set_model) const {
-		grid.bind();
-		for (auto i = 0u; i < tree.size(); ++i) {
-			tree[i]->draw(grid, [&](auto model){
-				set_model(getPlaneTransforms()[i]*model);
-			});
+	void SphereGrid::draw() const {
+		auto count = this->countLeaves();
+
+		std::vector<glm::mat4> grid_displacements;
+		grid_displacements.reserve(count);
+
+		for (unsigned int i = 0; i < tree.size(); ++i) {
+			tree[i]->getAttribs([&](const glm::mat4 &t){grid_displacements.push_back(getPlaneTransforms()[i]*t);});
 		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, grid_instance_vbo);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(glm::mat4), grid_displacements.data(), GL_STATIC_DRAW);
+
+		grid.bind();
+		grid.drawInstanced(count);
 	}
 
 	void SphereGrid::buildFromPoint(const glm::vec3 &camera_pos) {
@@ -61,5 +69,14 @@ namespace Planet
 	SphereGrid::SphereGrid(int divs, float radius) :
 		radius(radius),
 		grid(divs)
-	{}
+	{
+		grid.bind();
+		glGenBuffers(1, &grid_instance_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, grid_instance_vbo);
+		for (int i = 0; i < 4; ++i) {
+			glEnableVertexAttribArray(1+i);
+			glVertexAttribPointer(1+i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)*i));
+			glVertexAttribDivisor(1+i, 1);
+		}
+	}
 }
