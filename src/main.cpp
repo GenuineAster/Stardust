@@ -18,6 +18,7 @@
 #include "Util/FrameTimer.hpp"
 #include "Planet/SphereGrid.hpp"
 
+constexpr struct {float x,y;} resolution {960, 720};
 
 int main() {
 	// Window/context setup
@@ -25,12 +26,12 @@ int main() {
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_DEPTH_BITS, 8);
+	glfwWindowHint(GLFW_DEPTH_BITS, 32);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow *window = glfwCreateWindow(640, 480, "Stardust", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(resolution.x, resolution.y, "Stardust", NULL, NULL);
 	if (!window) {
 		return -1;
 	}
@@ -43,6 +44,9 @@ int main() {
 	}
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendEquation(GL_FUNC_ADD);
 
 
 	// Shader setup
@@ -68,7 +72,7 @@ int main() {
 	shader.use();
 
 	// Uniform setup/defaults
-	glm::mat4 projection = glm::perspective(glm::radians(90.f), 640.f/480.f, 0.1f, 10000.f);
+	glm::mat4 projection = glm::perspective(glm::radians(90.f), resolution.x/resolution.y, 0.1f, 10000.f);
 	auto projection_uniform = shader.getUniformLocation("projection");
 	shader.setUniformData(projection_uniform, projection);
 

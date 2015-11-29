@@ -18,6 +18,6 @@ namespace Planet
 	public:
 		std::size_t countLeaves() const;
 		void getAttribs(const std::function<void(const glm::mat4&)> &add_attribs) const;
-		GridTree(int max_depth, int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent=nullptr);
+		GridTree(const int max_depth, const int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent=nullptr);
 	};
 }

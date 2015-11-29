@@ -30,7 +30,7 @@ namespace Planet
 		}
 	}
 
-	GridTree::GridTree(int max_depth, int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent) :
+	GridTree::GridTree(const int max_depth, const int depth, const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &half_size, const GridTree *parent) :
 		origin(origin),
 		half_size(half_size),
 		parent(parent)
