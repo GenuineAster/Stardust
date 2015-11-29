@@ -15,6 +15,8 @@ void main() {
 		1.0
 	);
 
+	if (vHeight == -2.0) color = vec4(0.4, 0.4, 0.4, 1.0);
+
 	float light = dot(normalize(vNormal), normalize(vec3(0.0, 0.0, 8.0)));
 
 	fColor = color * light;
