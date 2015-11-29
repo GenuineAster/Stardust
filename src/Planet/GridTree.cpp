@@ -22,12 +22,22 @@ namespace Planet
 				node.draw(grid, set_model);
 			}
 		} else {
+			getAttribs(set_model);
+			grid.draw();
+		}
+	}
+
+	void GridTree::getAttribs(const std::function<void(const glm::mat4&)> &add_attribs) const {
+		if (!nodes.empty()) {
+			for (auto &node : nodes) {
+				node.getAttribs(add_attribs);
+			}
+		} else {
 			// The grid has a size of [2, 2], so the scale can remain the half_size
-			glm::vec3 scale = {half_size.x, half_size.y, half_size.y};
+			glm::vec3 scale = glm::vec3{half_size.x, half_size.y, half_size.y};
 
 			// Upload uniform and draw
-			set_model(glm::scale(glm::translate(glm::mat4(1.f), glm::vec3{origin, 0.0}), scale));
-			grid.draw();
+			add_attribs(glm::scale(glm::translate(glm::mat4(1.f), glm::vec3{origin, 0.0}), scale));
 		}
 	}
 
