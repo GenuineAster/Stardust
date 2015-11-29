@@ -13,7 +13,7 @@ namespace Planet
 	class SphereGrid
 	{
 	private:
-		static std::array<glm::mat4, 6> getPositionTransforms();
+		static std::array<glm::mat4, 6> getPlaneTransforms();
 
 		float radius;
 		Grid grid;
