@@ -90,6 +90,8 @@ int main() {
 
 	Util::FrameTimer frame_timer;
 
+	glClearColor(0.2, 0.4, 0.9, 1.0);
+
 	while (!glfwWindowShouldClose(window)) {
 		// Only time the actual frame code
 		frame_timer.start = std::chrono::high_resolution_clock::now();
