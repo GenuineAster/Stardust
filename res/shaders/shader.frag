@@ -19,5 +19,6 @@ void main() {
 	float height = gHeight/2.0+0.5;
 	vec4 color = texture(uPlanetGradient, uWater == 1 ? 0.0 : height);
 	color.rgb *= brightness;
+	color.a = uWater == 1 ? color.a : 1.0;
 	fColor = color;
 }
