@@ -11,7 +11,6 @@ out vec3 gNormal;
 out vec3 gPosition;
 out float gHeight;
 
-float snoise(vec3 v);
 float anoise(vec3 P);
 
 vec3 getSpherePos(const in float theta, const in float phi) {
@@ -92,10 +91,6 @@ float fbm(vec3 x) {
 		a *= 0.5;
 	}
 	return v * 2.0 - 1.0;
-}
-
-float anoise_(vec3 P) {
-	return snoise(P);
 }
 
 float anoise(vec3 P) {
