@@ -7,6 +7,7 @@ uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform int uWater;
+uniform float uWaterLevel;
 uniform float uNear, uFar;
 
 out vec3 gNormal;
@@ -54,13 +55,16 @@ void main() {
 		}
 		EndPrimitive();
 	} else {
-		bool water = any(lessThan(heights, vec3(0.02, 0.02, 0.02)));
+		float wlvl = uWaterLevel + 0.04;
+		bool water = any(lessThan(heights, vec3(
+			wlvl, wlvl, wlvl
+		)));
 
 		if (water) {
-			gHeight = -0.02;
+			gHeight = uWaterLevel;
 			for (int i = 0; i < 3; ++i) {
 				gNormal = positions[i];
-				vec4 tmp = transform * vec4(positions[i] * 1000.0, 1.0);
+				vec4 tmp = transform * vec4(positions[i] * (1000.0 + 50.0 * gHeight), 1.0);
 				gPosition = vec3(tmp);
 				gl_Position = uProjection * tmp;
 				fixDepth(gl_Position);

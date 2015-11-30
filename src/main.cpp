@@ -136,6 +136,10 @@ int main() {
 	auto water_uniform = shader.getUniformLocation("uWater");
 	shader.setUniformData(water_uniform, water);
 
+	float water_level = -0.02;
+	auto water_level_uniform = shader.getUniformLocation("uWaterLevel");
+	shader.setUniformData(water_level_uniform, water_level);
+
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
 
