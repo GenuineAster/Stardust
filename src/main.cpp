@@ -99,6 +99,35 @@ int main() {
 	shader.setUniformData(view_uniform, view);
 
 
+	Graphics::OpenGL::Texture planet_gradient;
+	planet_gradient.create();
+	planet_gradient.bind(GL_TEXTURE0, GL_TEXTURE_1D);
+	std::vector<glm::vec4> gradient{
+		{0.70f, 0.70f, 1.00f, 0.90f}, // water
+		{0.00f, 0.00f, 1.00f, 1.00f}, // under-water
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.00f, 0.00f, 1.00f, 1.00f},
+		{0.75f, 0.75f, 0.00f, 1.00f}, // sand
+		{0.75f, 0.75f, 0.00f, 1.00f},
+		{0.20f, 0.70f, 0.20f, 1.00f}, // grass
+		{0.20f, 0.70f, 0.20f, 1.00f},
+		{0.20f, 0.70f, 0.20f, 1.00f},
+		{0.40f, 0.40f, 0.10f, 1.00f}, // rock
+		{0.40f, 0.40f, 0.10f, 1.00f},
+		{0.80f, 0.80f, 0.80f, 1.00f}, // snow
+		{0.80f, 0.80f, 0.80f, 1.00f},
+		{0.80f, 0.80f, 0.80f, 1.00f},
+		{0.80f, 0.80f, 0.80f, 1.00f},
+	};
+	planet_gradient.texImage1D(0, GL_RGBA, gradient.size(), GL_RGBA, GL_FLOAT, gradient.data());
+	auto gradient_uniform = shader.getUniformLocation("uPlanetGradient");
+	shader.setUniformData(gradient_uniform, planet_gradient);
+
 	int32_t water = 0;
 	auto water_uniform = shader.getUniformLocation("uWater");
 	shader.setUniformData(water_uniform, water);

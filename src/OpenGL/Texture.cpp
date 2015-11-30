@@ -19,6 +19,29 @@ namespace Graphics
 			}
 		}
 
+		void Texture::texImage1D(
+			GLint level,
+			GLint internal_format,
+			GLsizei width,
+			GLenum format,
+			GLenum type,
+			const GLvoid *data
+		) {
+			if ( ! this->isValid())
+				return;
+
+			glActiveTexture(m_tex_num);
+			// Upload texture data to the texture
+			glTexImage1D(m_target,
+				level, internal_format,
+				width, 0,
+				format, type, data
+			);
+			// Set basic "default" texture params
+			glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+
 		void Texture::texImage2D(
 			GLint level,
 			GLint internal_format,

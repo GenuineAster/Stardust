@@ -38,6 +38,24 @@ namespace Graphics
 			 */
 			void create();
 
+			/*! \brief Uploads 1D data to the texture.
+			 *  \param[in] level the LOD number, default is 0
+			 *  \param[in] internal_format the texture's internal format
+			 *  \param[in] width the texture's width
+			 *  \param[in] height the texture's height
+			 *  \param[in] format the pixel data format
+			 *  \param[in] type the way the pixel data format is stored
+			 *  \param[in] data the pixel data to upload
+			 */
+			void texImage1D(
+				GLint level,
+				GLint internal_format,
+				GLsizei width,
+				GLenum format,
+				GLenum type,
+				const GLvoid *data
+			);
+
 			/*! \brief Uploads 2D data to the texture.
 			 *  \param[in] level the LOD number, default is 0
 			 *  \param[in] internal_format the texture's internal format
