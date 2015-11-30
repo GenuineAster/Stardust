@@ -6,10 +6,12 @@ layout(triangle_strip, max_vertices=3) out;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform int uWater;
 
 out vec3 gNormal;
 out vec3 gPosition;
 out float gHeight;
+out float gWater;
 
 float anoise(vec3 P);
 
@@ -25,31 +27,61 @@ void main() {
 	vec3 grid_pos[3];
 	vec4 positions[3];
 	float heights[3];
+	vec3 water_positions[3];
 
 	for (int i = 0; i < 3; ++i) {
 		grid_pos[i] = vec3(gl_in[i].gl_Position);
 		float theta = acos(grid_pos[i].z / length(grid_pos[i]));
 		float phi   = atan(grid_pos[i].y, grid_pos[i].x+0.0001);
 		vec3 sphere_position = getSpherePos(theta, phi);
+
+		water_positions[i] = sphere_position * 1000.0;
+		
 		heights[i] = anoise(sphere_position*1.5);
 		float height = 1000.0 + 50.0 * heights[i];
 		sphere_position *= height;
+
 		positions[i] = view * model * vec4(sphere_position, 1.0);
 	}
 
-	gNormal = normalize(cross(
-		vec3(positions[1] - positions[0]),
-		vec3(positions[2] - positions[0])
-	));
-	gNormal = gNormal * sign(gNormal.z);
+	if (uWater == 0) {
+		gNormal = normalize(cross(
+			vec3(positions[1] - positions[0]),
+			vec3(positions[2] - positions[0])
+		));
+		gNormal = gNormal * sign(gNormal.z);
 
-	for (int i = 0; i < 3; ++i) {
-		gHeight = heights[i];
-		gPosition = vec3(positions[i]);
-		gl_Position = projection * positions[i];
-		EmitVertex();
+		gWater = -1.0;
+
+		for (int i = 0; i < 3; ++i) {
+			gHeight = heights[i];
+			gPosition = vec3(positions[i]);
+			gl_Position = projection * positions[i];
+			EmitVertex();
+		}
+		EndPrimitive();
+	} else {
+		bool water = false;
+		for (int i = 0; i < 3; ++i) {
+			if (heights[i] < 0.02) {
+				water = true;
+			}
+		}
+
+		gWater = 1.0;
+		if (water) {
+			for (int i = 0; i < 3; ++i) {
+				gHeight = -0.02;
+				gNormal = normalize(water_positions[i]);
+				
+				vec4 tmp = view * model * vec4(water_positions[i], 1.0);
+				gPosition = vec3(tmp);
+				gl_Position = projection * tmp;
+				EmitVertex();
+			}
+			EndPrimitive();
+		}
 	}
-	EndPrimitive();
 }
 
 // From https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83

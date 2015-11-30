@@ -8,6 +8,7 @@
 
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/ShaderProgram.hpp"
+#include "OpenGL/Framebuffer.hpp"
 
 #include <array>
 #include <thread>
@@ -89,6 +90,10 @@ int main() {
 	auto view_uniform = shader.getUniformLocation("view");
 	shader.setUniformData(view_uniform, view);
 
+	int32_t water = 0;
+	auto water_uniform = shader.getUniformLocation("uWater");
+	shader.setUniformData(water_uniform, water);
+
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
 
@@ -112,6 +117,10 @@ int main() {
 			shader.setUniformData(model_uniform, model);
 			
 			cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
+
+			shader.setUniformData(water_uniform, 0);
+			cube.draw();
+			shader.setUniformData(water_uniform, 1);
 			cube.draw();
 
 			glfwSwapBuffers(window);
