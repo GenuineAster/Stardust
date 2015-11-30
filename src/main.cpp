@@ -44,6 +44,10 @@ int main() {
 		return -1;
 	}
 
+	if (!glewIsSupported("GL_VERSION_3_3")) {
+		std::cout<<"OpenGL 3.3 is required to run Stardust!"<<std::endl;
+	}
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
