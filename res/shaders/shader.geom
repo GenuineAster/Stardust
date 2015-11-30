@@ -12,7 +12,6 @@ uniform float near, far;
 out vec3 gNormal;
 out vec3 gPosition;
 out float gHeight;
-out float gWater;
 
 float anoise(vec3 P);
 
@@ -21,67 +20,47 @@ void fixDepth(inout vec4 P) {
     P.z *= P.w;
 }
 
-vec3 getSpherePos(const in float theta, const in float phi) {
-	return vec3(
-		sin(theta) * cos(phi),
-		sin(theta) * sin(phi),
-		cos(theta)
-	);
-}
-
 void main() {
-	vec3 grid_pos[3];
-	vec4 positions[3];
-	float heights[3];
-	vec3 water_positions[3];
+	vec3 positions[3];
+	vec3 heights;
+
+	mat4 transform = view * model;
 
 	for (int i = 0; i < 3; ++i) {
-		grid_pos[i] = vec3(gl_in[i].gl_Position);
-		float theta = acos(grid_pos[i].z / length(grid_pos[i]));
-		float phi   = atan(grid_pos[i].y, grid_pos[i].x+0.0001);
-		vec3 sphere_position = getSpherePos(theta, phi);
-
-		water_positions[i] = sphere_position * 1000.0;
-		
-		heights[i] = anoise(sphere_position*1.5);
-		float height = 1000.0 + 50.0 * heights[i];
-		sphere_position *= height;
-
-		positions[i] = view * model * vec4(sphere_position, 1.0);
+		vec3 grid_pos = vec3(gl_in[i].gl_Position);
+		positions[i] = normalize(grid_pos);
+		heights[i] = anoise(positions[i]*1.5);
 	}
 
 	if (uWater == 0) {
-		gNormal = normalize(cross(
-			vec3(positions[1] - positions[0]),
-			vec3(positions[2] - positions[0])
-		));
-		gNormal = gNormal * sign(gNormal.z);
+		vec4 calc_positions[3];
+		for (int i = 0; i < 3; ++i) {
+			calc_positions[i] = transform * vec4(positions[i] * (1000.0 + 50.0 * heights[i]), 1.0);
+		}
 
-		gWater = -1.0;
+		gNormal = normalize(cross(
+			vec3(calc_positions[1] - calc_positions[0]),
+			vec3(calc_positions[2] - calc_positions[0])
+		));
+
+		gNormal = gNormal * sign(gNormal.z);
 
 		for (int i = 0; i < 3; ++i) {
 			gHeight = heights[i];
-			gPosition = vec3(positions[i]);
-			gl_Position = projection * positions[i];
+			gPosition = vec3(calc_positions[i]);
+			gl_Position = projection * calc_positions[i];
 			fixDepth(gl_Position);
 			EmitVertex();
 		}
 		EndPrimitive();
 	} else {
-		bool water = false;
-		for (int i = 0; i < 3; ++i) {
-			if (heights[i] < 0.02) {
-				water = true;
-			}
-		}
+		bool water = any(lessThan(heights, vec3(0.02, 0.02, 0.02)));
 
-		gWater = 1.0;
 		if (water) {
+			gHeight = -0.02;
 			for (int i = 0; i < 3; ++i) {
-				gHeight = -0.02;
-				gNormal = normalize(water_positions[i]);
-				
-				vec4 tmp = view * model * vec4(water_positions[i], 1.0);
+				gNormal = positions[i];
+				vec4 tmp = transform * vec4(positions[i] * 1000.0, 1.0);
 				gPosition = vec3(tmp);
 				gl_Position = projection * tmp;
 				fixDepth(gl_Position);

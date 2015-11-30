@@ -28,9 +28,9 @@ void main() {
 	else if (height >= 0.0) color = water;
 	else color = water;
 
-	vec3 light_pos = vec3(vec4(0.0, 10.0, -10.0, 1.0));
+	vec3 light_pos = vec3(0.0, 10.0, -10.0);
 	vec3 to_surface = normalize(light_pos - gPosition);
-	float brightness = abs(dot(to_surface, normalize(gNormal)));
+	float brightness = abs(dot(to_surface, gNormal));
 	brightness = clamp(brightness, 0.0, 1.0);
 
 	fColor = vec4(color * brightness, (uWater == 1) ? 0.8 : 1.0);

@@ -77,13 +77,10 @@ namespace Planet
 			const float N = -dot(plane_normal, w);
 			const float D =  dot(plane_normal, u);
 
-			float sI = N / D;
+			const float quotient = N / D;
+			const float multiple = quotient * 1.0 + (quotient < 0.0) * 10000.0;
 
-			if (sI < 0.0) {
-				sI *= 10000.0;
-			}
-
-			const glm::vec3 intersect = sI * u;
+			const glm::vec3 intersect = multiple * u;
 			const glm::vec2 transformed_pos = glm::vec2(glm::inverse(getPlaneTransforms()[i])*glm::vec4(intersect, 1.f));
 
 			const float max_depth = std::floor(11.0 - std::sqrt((glm::length(camera_pos) - radius) / 50.f));
