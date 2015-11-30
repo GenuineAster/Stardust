@@ -73,7 +73,15 @@ int main() {
 	shader.use();
 
 	// Uniform setup/defaults
-	glm::mat4 projection = glm::perspective(glm::radians(90.f), resolution.x/resolution.y, 0.1f, 10000.f);
+	float near = 0.1f;
+	auto near_uniform = shader.getUniformLocation("near");
+	shader.setUniformData(near_uniform, near);
+
+	float far = 10000.f;
+	auto far_uniform = shader.getUniformLocation("far");
+	shader.setUniformData(far_uniform, far);
+
+	glm::mat4 projection = glm::perspective(glm::radians(90.f), resolution.x/resolution.y, near, far);
 	auto projection_uniform = shader.getUniformLocation("projection");
 	shader.setUniformData(projection_uniform, projection);
 
@@ -89,6 +97,7 @@ int main() {
 	glm::mat4 view = glm::lookAt(eye, center, up);
 	auto view_uniform = shader.getUniformLocation("view");
 	shader.setUniformData(view_uniform, view);
+
 
 	int32_t water = 0;
 	auto water_uniform = shader.getUniformLocation("uWater");

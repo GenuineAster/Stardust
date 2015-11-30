@@ -7,6 +7,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform int uWater;
+uniform float near, far;
 
 out vec3 gNormal;
 out vec3 gPosition;
@@ -14,6 +15,11 @@ out float gHeight;
 out float gWater;
 
 float anoise(vec3 P);
+
+void fixDepth(inout vec4 P) {
+	P.z = 2.0*log(P.w/near)/log(far/near) - 1; 
+    P.z *= P.w;
+}
 
 vec3 getSpherePos(const in float theta, const in float phi) {
 	return vec3(
@@ -57,6 +63,7 @@ void main() {
 			gHeight = heights[i];
 			gPosition = vec3(positions[i]);
 			gl_Position = projection * positions[i];
+			fixDepth(gl_Position);
 			EmitVertex();
 		}
 		EndPrimitive();
@@ -77,6 +84,7 @@ void main() {
 				vec4 tmp = view * model * vec4(water_positions[i], 1.0);
 				gPosition = vec3(tmp);
 				gl_Position = projection * tmp;
+				fixDepth(gl_Position);
 				EmitVertex();
 			}
 			EndPrimitive();
