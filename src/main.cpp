@@ -18,7 +18,7 @@
 #include "Util/FrameTimer.hpp"
 #include "Planet/SphereGrid.hpp"
 
-constexpr struct {float x,y;} resolution {960, 720};
+constexpr struct {float x,y;} resolution {1280, 720};
 
 int main() {
 	// Window/context setup
