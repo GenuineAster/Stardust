@@ -14,33 +14,58 @@ namespace Planet
 		};
 	}
 
-	std::size_t SphereGrid::countLeaves() const {
-		std::size_t accumulator = 0;
-		for (auto &node : tree) {
-			accumulator += node->countLeaves();
+	std::size_t SphereGrid::countLeavesInternal() const {
+		if (!count_data_cache) {
+			std::size_t accumulator = 0;
+			for (auto &node : tree) {
+				accumulator += node->countLeaves();
+			}
+			return accumulator;
+		} else {
+			return count_data_cache;
 		}
-		return accumulator;
 	}
 
-	void SphereGrid::draw() const {
-		auto count = this->countLeaves();
+	std::size_t SphereGrid::countLeaves() const {
+		return countLeavesInternal();
+	}
 
-		std::vector<glm::mat4> grid_displacements;
-		grid_displacements.reserve(count);
+	std::size_t SphereGrid::countLeaves() {
+		count_data_cache = countLeavesInternal();
+		return count_data_cache;
+	}
 
-		for (unsigned int i = 0; i < tree.size(); ++i) {
-			tree[i]->getAttribs([&](const glm::mat4 &t){grid_displacements.push_back(getPlaneTransforms()[i]*t);});
+	void SphereGrid::uploadInstanceData() {
+		if (!instance_data_cached) {
+			auto count = this->countLeaves();
+
+			std::vector<glm::mat4> grid_displacements;
+			grid_displacements.reserve(count);
+
+			for (unsigned int i = 0; i < tree.size(); ++i) {
+				tree[i]->getAttribs([&](const glm::mat4 &t){grid_displacements.push_back(getPlaneTransforms()[i]*t);});
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, grid_instance_vbo);
+			glBufferData(GL_ARRAY_BUFFER, count * sizeof(glm::mat4), grid_displacements.data(), GL_STATIC_DRAW);
+
+			instance_data_cached = true;
 		}
+	}
 
-		glBindBuffer(GL_ARRAY_BUFFER, grid_instance_vbo);
-		glBufferData(GL_ARRAY_BUFFER, count * sizeof(glm::mat4), grid_displacements.data(), GL_STATIC_DRAW);
+	void SphereGrid::draw() {
+		this->uploadInstanceData();
 
+		auto count = this->countLeaves();
 		grid.bind();
 		grid.drawInstanced(count);
 	}
 
 	void SphereGrid::buildFromPoint(const glm::vec3 &camera_pos) {
 		const glm::vec3 &segment_end = camera_pos;
+
+		instance_data_cached = false;
+		count_data_cache = 0;
 
 		for (auto i = 0u; i < tree.size(); ++i) {
 			const glm::vec3 plane_origin = glm::vec3(getPlaneTransforms()[i] * glm::vec4(0.f, 0.f, 0.f, 1.f));
@@ -68,7 +93,9 @@ namespace Planet
 
 	SphereGrid::SphereGrid(int divs, float radius) :
 		radius(radius),
-		grid(divs)
+		grid(divs),
+		count_data_cache(0),
+		instance_data_cached(false)
 	{
 		grid.bind();
 		glGenBuffers(1, &grid_instance_vbo);
