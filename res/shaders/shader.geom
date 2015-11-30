@@ -3,11 +3,11 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices=3) out;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 uniform int uWater;
-uniform float near, far;
+uniform float uNear, uFar;
 
 out vec3 gNormal;
 out vec3 gPosition;
@@ -16,7 +16,7 @@ out float gHeight;
 float anoise(vec3 P);
 
 void fixDepth(inout vec4 P) {
-	P.z = 2.0*log(P.w/near)/log(far/near) - 1; 
+	P.z = 2.0*log(P.w/uNear)/log(uFar/uNear) - 1; 
     P.z *= P.w;
 }
 
@@ -24,7 +24,7 @@ void main() {
 	vec3 positions[3];
 	vec3 heights;
 
-	mat4 transform = view * model;
+	mat4 transform = uView * uModel;
 
 	for (int i = 0; i < 3; ++i) {
 		vec3 grid_pos = vec3(gl_in[i].gl_Position);
@@ -48,7 +48,7 @@ void main() {
 		for (int i = 0; i < 3; ++i) {
 			gHeight = heights[i];
 			gPosition = vec3(calc_positions[i]);
-			gl_Position = projection * calc_positions[i];
+			gl_Position = uProjection * calc_positions[i];
 			fixDepth(gl_Position);
 			EmitVertex();
 		}
@@ -62,7 +62,7 @@ void main() {
 				gNormal = positions[i];
 				vec4 tmp = transform * vec4(positions[i] * 1000.0, 1.0);
 				gPosition = vec3(tmp);
-				gl_Position = projection * tmp;
+				gl_Position = uProjection * tmp;
 				fixDepth(gl_Position);
 				EmitVertex();
 			}

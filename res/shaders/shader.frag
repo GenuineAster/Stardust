@@ -4,7 +4,7 @@ in vec3 gPosition;
 in vec3 gNormal;
 in float gHeight;
 
-uniform mat4 view;
+uniform mat4 uView;
 uniform int uWater;
 
 out vec4 fColor;

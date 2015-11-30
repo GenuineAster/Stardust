@@ -74,19 +74,19 @@ int main() {
 
 	// Uniform setup/defaults
 	float near = 0.1f;
-	auto near_uniform = shader.getUniformLocation("near");
+	auto near_uniform = shader.getUniformLocation("uNear");
 	shader.setUniformData(near_uniform, near);
 
 	float far = 10000.f;
-	auto far_uniform = shader.getUniformLocation("far");
+	auto far_uniform = shader.getUniformLocation("uFar");
 	shader.setUniformData(far_uniform, far);
 
 	glm::mat4 projection = glm::perspective(glm::radians(90.f), resolution.x/resolution.y, near, far);
-	auto projection_uniform = shader.getUniformLocation("projection");
+	auto projection_uniform = shader.getUniformLocation("uProjection");
 	shader.setUniformData(projection_uniform, projection);
 
 	glm::mat4 model = glm::translate(glm::mat4(1.f), {0.f, 0.f, 0.f});
-	auto model_uniform = shader.getUniformLocation("model");
+	auto model_uniform = shader.getUniformLocation("uModel");
 	shader.setUniformData(model_uniform, model);
 
 
@@ -95,7 +95,7 @@ int main() {
 	glm::vec3 up {0.f, 1.f, 0.f};
 
 	glm::mat4 view = glm::lookAt(eye, center, up);
-	auto view_uniform = shader.getUniformLocation("view");
+	auto view_uniform = shader.getUniformLocation("uView");
 	shader.setUniformData(view_uniform, view);
 
 
