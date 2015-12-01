@@ -145,7 +145,7 @@ int main() {
 
 	Util::FrameTimer frame_timer;
 
-	glClearColor(0.2, 0.4, 0.9, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Only time the actual frame code
