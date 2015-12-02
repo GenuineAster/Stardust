@@ -16,6 +16,7 @@ namespace Graphics
 		{
 			if ( ! this->isValid()) {
 				glGenTextures(1, &m_texture);
+				m_valid = true;
 			}
 		}
 
@@ -102,6 +103,7 @@ namespace Graphics
 		{
 			if (this->isValid()) {
 				glDeleteTextures(1, &m_texture);
+				m_valid = false;
 			}
 			m_texture = -1;
 		}
@@ -118,7 +120,7 @@ namespace Graphics
 
 		bool Texture::isValid() const
 		{
-			return glIsTexture(m_texture);
+			return glIsTexture(m_texture) || m_valid;
 		}
 
 		Texture::Texture() : m_texture(-1), m_tex_num(GL_TEXTURE0)

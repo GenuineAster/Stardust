@@ -27,6 +27,10 @@ namespace Graphics
 			 */
 			GLenum m_target;
 
+			/*! \brief The internal construction flag
+			 */
+			bool m_valid;
+
 		public:
 			/*! \brief Binds the texture object to the given texture unit and target
 			 *  \param[in] tex_num the texture number to activate

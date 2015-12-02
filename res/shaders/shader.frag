@@ -17,7 +17,7 @@ void main() {
 	brightness = clamp(brightness, 0.0, 1.0);
 
 	float height = gHeight/2.0+0.5;
-	vec4 color = texture(uPlanetGradient, uWater == 1 ? 0.0 : height);
+	vec4 color = uWater == 1 ? texelFetch(uPlanetGradient, 0, 0): texture(uPlanetGradient, height);
 	color.rgb *= brightness;
 	color.a = uWater == 1 ? color.a : 1.0;
 	fColor = color;

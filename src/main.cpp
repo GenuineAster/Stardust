@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/io.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -13,11 +14,15 @@
 #include <array>
 #include <thread>
 #include <iomanip>
+#include <fstream>
 #include <iostream>
+#include <exception>
 #include <functional>
 
+#include <json/json.h>
+
+#include "Planet/Planet.hpp"
 #include "Util/FrameTimer.hpp"
-#include "Planet/SphereGrid.hpp"
 
 constexpr struct {float x,y;} resolution {1280, 720};
 
@@ -102,43 +107,27 @@ int main() {
 	auto view_uniform = shader.getUniformLocation("uView");
 	shader.setUniformData(view_uniform, view);
 
-
-	Graphics::OpenGL::Texture planet_gradient;
-	planet_gradient.create();
-	planet_gradient.bind(GL_TEXTURE0, GL_TEXTURE_1D);
-	std::vector<glm::vec4> gradient{
-		{0.70f, 0.70f, 1.00f, 0.90f}, // water
-		{0.00f, 0.00f, 1.00f, 1.00f}, // under-water
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.00f, 0.00f, 1.00f, 1.00f},
-		{0.75f, 0.75f, 0.00f, 1.00f}, // sand
-		{0.20f, 0.70f, 0.20f, 1.00f}, // grass
-		{0.20f, 0.70f, 0.20f, 1.00f},
-		{0.20f, 0.70f, 0.20f, 1.00f},
-		{0.20f, 0.70f, 0.20f, 1.00f},
-		{0.40f, 0.40f, 0.10f, 1.00f}, // rock
-		{0.40f, 0.40f, 0.10f, 1.00f},
-		{0.80f, 0.80f, 0.80f, 1.00f}, // snow
-		{0.80f, 0.80f, 0.80f, 1.00f},
-		{0.80f, 0.80f, 0.80f, 1.00f},
-		{0.80f, 0.80f, 0.80f, 1.00f},
-	};
-	planet_gradient.texImage1D(0, GL_RGBA, gradient.size(), GL_RGBA, GL_FLOAT, gradient.data());
-	auto gradient_uniform = shader.getUniformLocation("uPlanetGradient");
-	shader.setUniformData(gradient_uniform, planet_gradient);
-
-	int32_t water = 0;
 	auto water_uniform = shader.getUniformLocation("uWater");
-	shader.setUniformData(water_uniform, water);
-
-	float water_level = -0.02;
 	auto water_level_uniform = shader.getUniformLocation("uWaterLevel");
-	shader.setUniformData(water_level_uniform, water_level);
+	auto gradient_uniform = shader.getUniformLocation("uPlanetGradient");
+
+	// Read planet list from file
+	Json::Value planet_list;
+	{
+		std::ifstream stream("res/planets.json");
+		if (!stream) {
+			throw std::runtime_error("File res/planets.json not found.");
+		}
+		Json::Reader{}.parse(stream, planet_list);
+		planet_list = planet_list["planets"];
+	}
+
+	// Load listed planets
+	std::vector<std::unique_ptr<Planet::Planet>> planets;
+	for (auto &planet : planet_list) {
+		planets.push_back(std::make_unique<Planet::Planet>());
+		planets.back()->loadFromFile(planet["file"].asString());
+	}
 
 	// Planet sphere grid setup
 	Planet::SphereGrid cube(16, 1000.f);
@@ -162,12 +151,16 @@ int main() {
 			model = glm::rotate(model, glm::two_pi<float>() / 20000.f, {0.1, 0.2, 0.3});
 			shader.setUniformData(model_uniform, model);
 			
-			cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
+			for (auto &planet : planets) {
+				cube.buildFromPoint(glm::vec3(glm::inverse(glm::mat3(model)) * eye));
 
-			shader.setUniformData(water_uniform, 0);
-			cube.draw();
-			shader.setUniformData(water_uniform, 1);
-			cube.draw();
+				shader.setUniformData(water_level_uniform, planet->water_level);
+				shader.setUniformData(gradient_uniform, planet->gradient_tex);
+				shader.setUniformData(water_uniform, 0);
+				cube.draw();
+				shader.setUniformData(water_uniform, 1);
+				cube.draw();
+			}
 
 			glfwSwapBuffers(window);
 		}
